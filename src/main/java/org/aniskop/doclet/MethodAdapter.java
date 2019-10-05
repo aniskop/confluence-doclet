@@ -1,6 +1,7 @@
 package org.aniskop.doclet;
 
 import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.Parameter;
 
 /**
  * Represents a method. Used by templating engine.
@@ -17,8 +18,16 @@ public class MethodAdapter {
         return method.name();
     }
 
-    public String getReturnType() {
+    /**
+     *
+     * @return Non-qualified type name. Includes <code>[]</code> for arrays.
+     */
+    public String getReturnTypeName() {
         return method.returnType().typeName();
+    }
+
+    public String getReturnTypeDimension() {
+        return  method.returnType().dimension();
     }
 
     public static MethodAdapter[] toArray(MethodDoc[] methods) {
@@ -30,11 +39,19 @@ public class MethodAdapter {
     }
 
     public String getSummary() {
-        return method.commentText();
+        return method.commentText();//TODO extract only first sentence??
     }
 
-    public String getParameters() {
-        return "parameters";
+    public ParameterAdapter[] getParameters() {
+        return ParameterAdapter.toArray(method.parameters());
+    }
+
+    public String getModifiers() {
+        return method.modifiers();
+    }
+
+    public String getDescription() {
+        return method.commentText();
     }
 
 }

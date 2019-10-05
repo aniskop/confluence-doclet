@@ -11,16 +11,8 @@ extends ${class.superclass}
 ${class.comment}
 
 h1. Methods
-|| Return type || Method || Summary ||
-<#list class.methods as method>
-| ${method.returnType} | ${method.name} | ${method.summary} |
-</#list>
-
+<#include "class-methods-summary.ftl">
 <#list class.methods as method>
 h2. ${method.name}
-{code:java}
-${method.name}
-{code}
-${method.summary}
-*Parameters:*
+<#include "method.ftl">
 </#list>
