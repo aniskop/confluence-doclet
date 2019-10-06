@@ -15,6 +15,7 @@ public class SimpleClass {
 
     /**
      * Method with no arguments.
+     * <p>Testing second line.</p>
      */
     public void noArgumentsMethod() {
 
@@ -30,7 +31,10 @@ public class SimpleClass {
         return "";
     }
 
-
+    /**
+     * For testing output of the generic arguments.
+     * @param theMap    String of Strings map.
+     */
     public void methodWithGenericArgument(Map<String, String> theMap) {
 
     }

@@ -1,23 +1,47 @@
 package org.aniskop.doclet;
 
+import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ParameterizedType;
 
-import java.util.HashMap;
-
 public class ParameterAdapter {
-    private Parameter p;
 
-    public ParameterAdapter(Parameter p) {
+    private Parameter p;
+    private String comment;
+
+    /**
+     * @param p
+     * @param comment Corresponding javadoc comment.
+     */
+    public ParameterAdapter(Parameter p, String comment) {
         this.p = p;
+        this.comment = comment;
     }
 
-    public static ParameterAdapter[] toArray(Parameter[] parameters) {
+    public static ParameterAdapter[] toArray(Parameter[] parameters, ParamTag[] tags) {
         ParameterAdapter[] paramAdapters = new ParameterAdapter[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            paramAdapters[i] = new ParameterAdapter(parameters[i]);
+            ParamTag paramTag = FindParamTag(parameters[i], tags);
+            if (paramTag == null) {
+                paramAdapters[i] = new ParameterAdapter(parameters[i], "");
+            } else {
+                paramAdapters[i] = new ParameterAdapter(parameters[i], paramTag.parameterComment());
+            }
         }
         return paramAdapters;
+    }
+
+    private static ParamTag FindParamTag(Parameter param, ParamTag[] tags) {
+        ParamTag result = null;
+        if (tags != null && tags.length > 0) {
+            for (ParamTag tag : tags) {
+                if (param.name().equals(tag.parameterName())) {
+                    result = tag;
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     public String getName() {
@@ -47,6 +71,7 @@ public class ParameterAdapter {
 
     /**
      * Used for generic types.
+     *
      * @return
      */
     public TypeAdapter[] getParamTypes() {
@@ -58,8 +83,8 @@ public class ParameterAdapter {
         }
     }
 
-    //TODO REMOVE THIS AS IT IS ONLY FOR TESTING
-    public void miau(int i, int k, HashMap<String, String> j) {
-
+    public String getComment() {
+        return comment;
     }
+
 }

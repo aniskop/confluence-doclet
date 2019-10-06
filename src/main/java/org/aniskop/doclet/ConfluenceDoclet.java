@@ -27,7 +27,7 @@ mvn package && javadoc -sourcepath ./src/test/java -doclet org.aniskop.doclet.Co
     "type": "page",
     "title": "new page from REST wiki 23",
     "space": {
-        "key": "~pavans"
+        "key": "~demospace"
     },
     "body": {
         "storage": {

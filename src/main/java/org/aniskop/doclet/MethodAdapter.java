@@ -1,6 +1,7 @@
 package org.aniskop.doclet;
 
 import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.ParamTag;
 
 /**
  * Represents a method. Used by templating engine.
@@ -18,7 +19,6 @@ public class MethodAdapter {
     }
 
     /**
-     *
      * @return Non-qualified type name. Includes <code>[]</code> for arrays.
      */
     public String getReturnTypeName() {
@@ -26,7 +26,7 @@ public class MethodAdapter {
     }
 
     public String getReturnTypeDimension() {
-        return  method.returnType().dimension();
+        return method.returnType().dimension();
     }
 
     public static MethodAdapter[] toArray(MethodDoc[] methods) {
@@ -42,7 +42,7 @@ public class MethodAdapter {
     }
 
     public ParameterAdapter[] getParameters() {
-        return ParameterAdapter.toArray(method.parameters());
+        return ParameterAdapter.toArray(method.parameters(), method.paramTags());
     }
 
     public String getModifiers() {
@@ -51,6 +51,10 @@ public class MethodAdapter {
 
     public String getDescription() {
         return method.commentText();
+    }
+
+    public ParamTagAdapter[] getParamTags() {
+        return ParamTagAdapter.toArray(method.paramTags());
     }
 
 }
