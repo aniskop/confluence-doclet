@@ -2,6 +2,7 @@ package org.aniskop.doclet;
 
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
+import com.sun.javadoc.Tag;
 
 /**
  * Represents a method. Used by templating engine.
@@ -49,12 +50,21 @@ public class MethodAdapter {
         return method.modifiers();
     }
 
-    public String getDescription() {
+    public String getComment() {
         return method.commentText();
     }
 
     public ParamTagAdapter[] getParamTags() {
         return ParamTagAdapter.toArray(method.paramTags());
+    }
+
+    public String getReturnComment() {
+        String comment = "";
+        Tag[] returnTags = method.tags("@return");
+        if (returnTags.length > 0) {
+            comment = returnTags[0].text();
+        }
+        return comment;
     }
 
 }

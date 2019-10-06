@@ -39,7 +39,18 @@ public class SimpleClass {
 
     }
 
+    /**
+     * For testing array argument.
+     * @param theArray
+     */
     public void methodWithArrayArgument(String[] theArray) {
 
+    }
+
+    /**
+     * For testing method which returns something, but has no @return tag.
+     */
+    public int methodWithoutReturnTag() {
+        return 0;
     }
 }
