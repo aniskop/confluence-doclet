@@ -1,0 +1,41 @@
+package org.aniskop.doclet.test;
+
+import java.util.Map;
+
+/**
+ * Just a simple standalone class for testing doclet output.
+ */
+public class SimpleClass {
+    /**
+     * Creates and instance of <code>SimpleClass</code>.
+     */
+    public SimpleClass() {
+
+    }
+
+    /**
+     * Method with no arguments.
+     */
+    public void noArgumentsMethod() {
+
+    }
+
+    /**
+     * Method which returns <code>String</code> and has 2 arguments.
+     * @param k Integer number
+     * @param s Some text
+     * @return  Just nothing.
+     */
+    public String returningMethodWithArguments(int k, String s) {
+        return "";
+    }
+
+
+    public void methodWithGenericArgument(Map<String, String> theMap) {
+
+    }
+
+    public void methodWithArrayArgument(String[] theArray) {
+
+    }
+}

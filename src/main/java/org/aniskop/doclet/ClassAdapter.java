@@ -1,7 +1,6 @@
 package org.aniskop.doclet;
 
 import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.MethodDoc;
 
 /**
  * Represents a class. Used by templating engine.

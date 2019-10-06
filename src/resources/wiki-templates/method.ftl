@@ -1,5 +1,5 @@
 {code:java}
-${method.modifiers} ${method.returnTypeName}${method.returnTypeDimension} ${method.name}(<#include "method-params-declaration.ftl">)
+<#include "method-signature.ftl">
 {code}
 ${method.description}
 *Parameters:*

@@ -101,7 +101,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>org.aniskop.doclet.ConfluenceDoclet</mainClass>
+                            <mainClass>org.aniskop.doclet.test.ConfluenceDoclet</mainClass>
                         </manifest>
                     </archive>
 
@@ -112,6 +112,17 @@
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>

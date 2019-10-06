@@ -13,8 +13,13 @@ import java.util.Locale;
 import java.util.Map;
 /*
 cd ~/development/confluence-doclet
-javadoc -sourcepath ./src/main/java -doclet org.aniskop.doclet.ConfluenceDoclet -docletpath ./target/confluence-doclet-1.0-jar-with-dependencies.jar -cp $JAVA_HOME/lib/tools.jar  org.aniskop.doclet
+javadoc -sourcepath ./src/main/java -doclet ConfluenceDoclet -docletpath
+./target/confluence-doclet-1.0-jar-with-dependencies.jar -cp $JAVA_HOME/lib/tools.jar  org.aniskop.doclet
 */
+/* QUICK COMPILE AND TEST
+mvn package && javadoc -sourcepath ./src/test/java -doclet org.aniskop.doclet.ConfluenceDoclet -docletpath ./target/confluence-doclet-1.0-jar-with-dependencies.jar -cp $JAVA_HOME/lib/tools.jar  org.aniskop.doclet.test
+*/
+
 
 
 /*Confluence rest body
@@ -46,13 +51,22 @@ public class ConfluenceDoclet {
         return true;
     }
 
+    /**
+     * NOTE: Without this method present and returning LanguageVersion.JAVA_1_5,
+     *       Javadoc will not process generics because it assumes LanguageVersion.JAVA_1_1
+     * @return language version (hard coded to LanguageVersion.JAVA_1_5)
+     */
+    public static LanguageVersion languageVersion() {
+        return LanguageVersion.JAVA_1_5;
+    }
+
     private void generateClassPages(ClassDoc[] classes) {
         if (classes != null && classes.length > 0) {
             for (ClassDoc c : classes) {
-                generateClassPage(c);
-
-                break; //TODO just for test
-                //savePage(content);
+                if (!c.name().equals("AppTest")) { //TODO just for testing
+                    generateClassPage(c);
+                    //savePage(content);
+                }
             }
         }
     }
@@ -123,7 +137,6 @@ public class ConfluenceDoclet {
     private void generatePackagePage() {
 
     }
-
 
 
 }
