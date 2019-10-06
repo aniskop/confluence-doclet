@@ -39,7 +39,14 @@ public class MethodAdapter {
     }
 
     public String getSummary() {
-        return method.commentText();//TODO extract only first sentence??
+        Tag[] tags = method.firstSentenceTags();
+        StringBuilder s = new StringBuilder();
+        for (Tag t : tags) {
+            s.append(t.text());
+            s.append(" ");
+        }
+
+        return s.toString();
     }
 
     public ParameterAdapter[] getParameters() {

@@ -2,6 +2,7 @@ package org.aniskop.doclet;
 
 import com.sun.javadoc.ParamTag;
 
+//TODO: remov as it is possibly useless
 public class ParamTagAdapter {
 
     private ParamTag t;
