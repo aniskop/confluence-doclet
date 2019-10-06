@@ -3,10 +3,10 @@
 {code}
 ${method.comment}
 
-*Parameters*
 <#if method.parameters?size gt 0>
+*Parameters*
     <#list method.parameters as p>
-        * {{${p.name}}} -- ${p.comment}<#lt>
+        * {{${p.name}}}<#if p.comment != ""> -- ${p.comment}</#if><#lt>
     </#list>
 </#if>
 
