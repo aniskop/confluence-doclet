@@ -29,4 +29,8 @@ public class PackageAdapter {
     public InterfaceAdapter[] getInterfaces() {
         return InterfaceAdapter.toArray(p.interfaces());
     }
+
+    public ExceptionAdapter[] getExceptions() {
+        return ExceptionAdapter.toArray(p.exceptions());
+    }
 }

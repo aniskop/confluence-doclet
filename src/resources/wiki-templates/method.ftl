@@ -5,8 +5,8 @@ ${method.comment}
 
 <#if method.parameters?size gt 0>
 *Parameters*
-    <#list method.parameters as p>
-        * {{${p.name}}}<#if p.comment != ""> -- ${p.comment}</#if><#lt>
+    <#list method.parameters as e>
+        * {{${e.name}}}<#if e.comment != ""> -- ${e.comment}</#if><#lt>
     </#list>
 </#if>
 

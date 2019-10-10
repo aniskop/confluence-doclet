@@ -21,3 +21,12 @@ h1. Classes
 None.
 </#if>
 
+h1. Exceptions
+<#if package.exceptions?size gt 0>
+|| Interface || Description ||
+<#list package.exceptions as e>
+| ${e.name} | ${e.comment} |
+</#list>
+<#else>
+None.
+</#if>
