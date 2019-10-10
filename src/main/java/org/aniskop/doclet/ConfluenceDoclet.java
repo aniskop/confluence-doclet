@@ -55,6 +55,7 @@ public class ConfluenceDoclet {
             Configuration templateConfig = doclet.createTemplateConfiguration();
 
             doclet.generatePackagePages(root.specifiedPackages(), templateConfig, options.getOutputDir());
+            doclet.createPackageDirectories(root.specifiedPackages(), options.getOutputDir());
             doclet.generateClassPages(root.classes(), templateConfig);
 
             return true;
@@ -197,5 +198,10 @@ public class ConfluenceDoclet {
         generatePage(templateConfig, input, "package.ftl", writer);
     }
 
+    private void createPackageDirectories(PackageDoc[] packages, String parentDir) {
+        for (PackageDoc p : packages) {
+            createDirectory(parentDir, p.name());
+        }
+    }
 
 }
