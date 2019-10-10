@@ -6,8 +6,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -43,16 +42,38 @@ mvn package && javadoc -sourcepath ./src/test/java -doclet org.aniskop.doclet.Co
  */
 public class ConfluenceDoclet {
 
+    private static Writer consoleWriter;
+
     public static boolean start(RootDoc root) {
+        try {
+            System.out.println("=== Confluence doclet ===");
+            ConfluenceDoclet doclet = new ConfluenceDoclet();
 
-        System.out.println("=== Confluence doclet ===");
-        ConfluenceDoclet doclet = new ConfluenceDoclet();
-        Configuration templateConfig = doclet.createTemplateConfiguration();
+            DocletOptions options = new DocletOptions(root.options());
+            System.out.println(options.toString());
 
-        doclet.generatePackagePages(root.specifiedPackages(), templateConfig);
-        doclet.generateClassPages(root.classes(), templateConfig);
+            Configuration templateConfig = doclet.createTemplateConfiguration();
 
-        return true;
+            doclet.generatePackagePages(root.specifiedPackages(), templateConfig, options.getOutputDir());
+            doclet.generateClassPages(root.classes(), templateConfig);
+
+            return true;
+        } catch (Exception e) {
+            //TODO implement
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private Writer createOutputWriter(String outDir, String name) throws IOException {
+        if ("".equals(outDir)) {
+            if (consoleWriter == null) {
+                consoleWriter = new OutputStreamWriter(System.out);
+            }
+            return consoleWriter;
+        } else {
+            return new FileWriter(outDir + "/" + name);
+        }
     }
 
     private Configuration createTemplateConfiguration() {
@@ -96,7 +117,7 @@ public class ConfluenceDoclet {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("class", new ClassAdapter(theClass));
 
-        generatePage(templateConfig, input, "class-page.ftl");
+        //generatePage(templateConfig, input, "class-page.ftl");
     }
 
     private String generateMethodsSummary(MethodDoc[] methods) {
@@ -111,25 +132,38 @@ public class ConfluenceDoclet {
     }
 
     private String generateMethodSummary(MethodDoc method) {
-        final String TEMPLATE = "<tr><td>%s</td><td>%s</td></tr>";
+        final String TEMPLATE = "<tr><td>%s</td><td>%s</td></ltr>";
         return String.format(TEMPLATE, method.returnType().typeName(), method.name());
     }
 
-    private void generatePackagePages(PackageDoc[] packages, Configuration templateConfig) {
+    private void generatePackagePages(PackageDoc[] packages, Configuration templateConfig, String outDir)
+            throws IOException {
         if (packages != null && packages.length > 0) {
             for (PackageDoc p : packages) {
-                generatePackagePage(p, templateConfig);
-                //savePage(content);
+                generatePackagePage(p, templateConfig, createOutputWriter(outDir, p.name() + ".wiki"));
             }
         }
     }
 
-    private void generatePage(Configuration templateConfig, Map<String, Object> input, String templateName) {
+    private File createDirectory(String parentDir, String name) {
+        if (!"".equals(parentDir)) {
+            File dir = new File(parentDir);
+            //TODO process creation error, boolean return value
+            dir.mkdir();
+            return dir;
+        } else {
+            //TODO throw exception??
+            return null;
+        }
+    }
+
+    private void generatePage(Configuration templateConfig, Map<String, Object> input, String templateName,
+                              Writer writer) {
         Template template = null;
         try {
             template = templateConfig.getTemplate(templateName);
             if (template != null) {
-                template.process(input, new OutputStreamWriter(System.out));
+                template.process(input, writer);
             }
         } catch (IOException e) {
             //TODO exception handling
@@ -140,7 +174,7 @@ public class ConfluenceDoclet {
         }
     }
 
-    private void generatePackagePage(PackageDoc p, Configuration templateConfig) {
+    private void generatePackagePage(PackageDoc p, Configuration templateConfig, Writer writer) {
         /*Configuration cfg = new Configuration(new Version("2.3.23"));
         cfg.setClassForTemplateLoading(this.getClass(), "/wiki-templates/");
         cfg.setDefaultEncoding("UTF-8");
@@ -160,7 +194,7 @@ public class ConfluenceDoclet {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("package", new PackageAdapter(p));
 
-        generatePage(templateConfig, input, "package.ftl");
+        generatePage(templateConfig, input, "package.ftl", writer);
     }
 
 
