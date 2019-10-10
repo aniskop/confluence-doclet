@@ -4,7 +4,7 @@ import com.sun.javadoc.Type;
 
 public class TypeAdapter {
 
-    Type t;
+    private Type t;
 
     public TypeAdapter(Type t) {
         this.t = t;

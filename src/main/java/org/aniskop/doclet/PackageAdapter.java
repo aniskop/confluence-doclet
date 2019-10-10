@@ -2,31 +2,17 @@ package org.aniskop.doclet;
 
 import com.sun.javadoc.PackageDoc;
 
-public class PackageAdapter {
-
-    private PackageDoc p;
+public class PackageAdapter extends BaseDocAdapter<PackageDoc> {
 
     public PackageAdapter(PackageDoc p) {
-        this.p = p;
-    }
-
-    public String getName() {
-        return p.name();
-    }
-
-    public String getSummary() {
-        return "";
-    }
-
-    public String getComment() {
-        return p.commentText();
+        super(p);
     }
 
     public ClassAdapter[] getClasses() {
-        return ClassAdapter.toArray(p.allClasses());
+        return ClassAdapter.toArray(doc.allClasses());
     }
 
     public InterfaceAdapter[] getInterfaces() {
-        return InterfaceAdapter.toArray(p.interfaces());
+        return InterfaceAdapter.toArray(doc.interfaces());
     }
 }

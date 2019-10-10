@@ -1,33 +1,26 @@
 package org.aniskop.doclet;
 
 import com.sun.javadoc.MethodDoc;
-import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Tag;
 
 /**
  * Represents a method. Used by templating engine.
  */
-public class MethodAdapter {
+public class MethodAdapter extends BaseDocAdapter<MethodDoc> {
 
-    private MethodDoc method;
-
-    public MethodAdapter(MethodDoc method) {
-        this.method = method;
-    }
-
-    public String getName() {
-        return method.name();
+    public MethodAdapter(MethodDoc m) {
+        super(m);
     }
 
     /**
      * @return Non-qualified type name. Includes <code>[]</code> for arrays.
      */
     public String getReturnTypeName() {
-        return method.returnType().typeName();
+        return doc.returnType().typeName();
     }
 
     public String getReturnTypeDimension() {
-        return method.returnType().dimension();
+        return doc.returnType().dimension();
     }
 
     public static MethodAdapter[] toArray(MethodDoc[] methods) {
@@ -38,36 +31,24 @@ public class MethodAdapter {
         return methodAdapters;
     }
 
-    public String getSummary() {
-        Tag[] tags = method.firstSentenceTags();
-        StringBuilder s = new StringBuilder();
-        for (Tag t : tags) {
-            s.append(t.text());
-            s.append(" ");
-        }
-
-        return s.toString();
-    }
-
     public ParameterAdapter[] getParameters() {
-        return ParameterAdapter.toArray(method.parameters(), method.paramTags());
+        return ParameterAdapter.toArray(doc.parameters(), doc.paramTags());
     }
 
     public String getModifiers() {
-        return method.modifiers();
-    }
-
-    public String getComment() {
-        return method.commentText();
+        return doc.modifiers();
     }
 
     public ParamTagAdapter[] getParamTags() {
-        return ParamTagAdapter.toArray(method.paramTags());
+        return ParamTagAdapter.toArray(doc.paramTags());
     }
 
+    /**
+     * Gets <code>@return</code> comment.
+     */
     public String getReturnComment() {
         String comment = "";
-        Tag[] returnTags = method.tags("@return");
+        Tag[] returnTags = doc.tags("@return");
         if (returnTags.length > 0) {
             comment = returnTags[0].text();
         }

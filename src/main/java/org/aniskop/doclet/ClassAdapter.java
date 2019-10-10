@@ -5,20 +5,14 @@ import com.sun.javadoc.ClassDoc;
 /**
  * Represents a class. Used by templating engine.
  */
-public class ClassAdapter {
+public class ClassAdapter extends BaseDocAdapter<ClassDoc> {
 
-    private ClassDoc theClass;
-
-    public ClassAdapter(ClassDoc method) {
-        this.theClass = method;
-    }
-
-    public String getName() {
-        return theClass.name();
+    public ClassAdapter(ClassDoc c) {
+        super(c);
     }
 
     public String getPackageName() {
-        return theClass.containingPackage().name();
+        return doc.containingPackage().name();
     }
 
     public static ClassAdapter[] toArray(ClassDoc[] classes) {
@@ -29,23 +23,19 @@ public class ClassAdapter {
         return methodAdapters;
     }
 
-    public String getComment() {
-        return theClass.commentText()+"//"+theClass.modifiers();
-    }
-
     public MethodAdapter[] getMethods() {
-        return MethodAdapter.toArray(theClass.methods());
+        return MethodAdapter.toArray(doc.methods());
     }
 
     public String getModifiers() {
-        return theClass.modifiers();
+        return doc.modifiers();
     }
 
     public String getSuperclass() {
-        return theClass.superclass().name();
+        return doc.superclass().name();
     }
 
     public String getQualifiedSuperclass() {
-        return theClass.superclass().qualifiedName();
+        return doc.superclass().qualifiedName();
     }
 }
