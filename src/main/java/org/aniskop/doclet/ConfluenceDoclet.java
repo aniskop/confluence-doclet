@@ -49,7 +49,8 @@ public class ConfluenceDoclet {
         ConfluenceDoclet doclet = new ConfluenceDoclet();
         Configuration templateConfig = doclet.createTemplateConfiguration();
 
-        doclet.generateClassPages(root.classes());
+        doclet.generatePackagePages(root.specifiedPackages(), templateConfig);
+        doclet.generateClassPages(root.classes(), templateConfig);
 
         return true;
     }
@@ -74,54 +75,28 @@ public class ConfluenceDoclet {
         return LanguageVersion.JAVA_1_5;
     }
 
-    private void generateClassPages(ClassDoc[] classes) {
+    private void generateClassPages(ClassDoc[] classes, Configuration templateConfig) {
         if (classes != null && classes.length > 0) {
             for (ClassDoc c : classes) {
                 if (!c.name().equals("AppTest")) { //TODO just for testing
-                    generateClassPage(c);
-                    //savePage(content);
+                    generateClassPage(c, templateConfig);
                 }
             }
         }
     }
 
+    //TODO delete, probably useless
     private void savePage(String content) {
         if (content != null && content.length() > 0) {
             System.out.println(content);
         }
     }
 
-    private void generateClassPage(ClassDoc theClass) {
-
-
+    private void generateClassPage(ClassDoc theClass, Configuration templateConfig) {
         Map<String, Object> input = new HashMap<String, Object>();
-
-        //input.put("title", "Vogella example");
-
-        /*input.put("exampleObject", new ValueExampleObject("Java object", "me"));
-
-        List<ValueExampleObject> systems = new ArrayList<ValueExampleObject>();
-        systems.add(new ValueExampleObject("Android", "Google"));
-        systems.add(new ValueExampleObject("iOS States", "Apple"));
-        systems.add(new ValueExampleObject("Ubuntu", "Canonical"));
-        systems.add(new ValueExampleObject("Windows7", "Microsoft"));
-        input.put("systems", systems);*/
         input.put("class", new ClassAdapter(theClass));
 
-        Template template = null;
-        try {
-            template = cfg.getTemplate("class-page.ftl");
-            if (template != null) {
-                template.process(input, new OutputStreamWriter(System.out));
-            }
-        } catch (IOException e) {
-            //TODO exception handling
-            e.printStackTrace();
-        } catch (Exception ee) {
-            //TODO exception handling
-            ee.printStackTrace();
-        }
-
+        generatePage(templateConfig, input, "class-page.ftl");
     }
 
     private String generateMethodsSummary(MethodDoc[] methods) {
@@ -149,14 +124,28 @@ public class ConfluenceDoclet {
         }
     }
 
+    private void generatePage(Configuration templateConfig, Map<String, Object> input, String templateName) {
+        Template template = null;
+        try {
+            template = templateConfig.getTemplate(templateName);
+            if (template != null) {
+                template.process(input, new OutputStreamWriter(System.out));
+            }
+        } catch (IOException e) {
+            //TODO exception handling
+            e.printStackTrace();
+        } catch (Exception ee) {
+            //TODO exception handling
+            ee.printStackTrace();
+        }
+    }
+
     private void generatePackagePage(PackageDoc p, Configuration templateConfig) {
-        Configuration cfg = new Configuration(new Version("2.3.23"));
+        /*Configuration cfg = new Configuration(new Version("2.3.23"));
         cfg.setClassForTemplateLoading(this.getClass(), "/wiki-templates/");
         cfg.setDefaultEncoding("UTF-8");
         cfg.setLocale(Locale.US);
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-
-        Map<String, Object> input = new HashMap<String, Object>();
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);*/
 
         //input.put("title", "Vogella example");
 
@@ -168,21 +157,10 @@ public class ConfluenceDoclet {
         systems.add(new ValueExampleObject("Ubuntu", "Canonical"));
         systems.add(new ValueExampleObject("Windows7", "Microsoft"));
         input.put("systems", systems);*/
-        input.put("class", new PackageAdapter(p));
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put("package", new PackageAdapter(p));
 
-        Template template = null;
-        try {
-            template = cfg.getTemplate("package.ftl");
-            if (template != null) {
-                template.process(input, new OutputStreamWriter(System.out));
-            }
-        } catch (IOException e) {
-            //TODO exception handling
-            e.printStackTrace();
-        } catch (Exception ee) {
-            //TODO exception handling
-            ee.printStackTrace();
-        }
+        generatePage(templateConfig, input, "package.ftl");
     }
 
 

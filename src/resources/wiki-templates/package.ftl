@@ -1,3 +1,4 @@
+{toc}
 ${package.comment}
 
 h1. Interfaces
@@ -13,9 +14,10 @@ None.
 h1. Classes
 <#if package.classes?size gt 0>
 || Interface || Description ||
-<#list package.interfaces as c>
-| ${c.name} | ${c.comment}
+<#list package.classes as c>
+| ${c.name} | ${c.comment} |
 </#list>
 <#else>
 None.
 </#if>
+
