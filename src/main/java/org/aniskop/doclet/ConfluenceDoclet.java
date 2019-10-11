@@ -52,19 +52,28 @@ public class ConfluenceDoclet extends Standard {
         try {
             System.out.println("=== Confluence doclet ===");
             ConfluenceDoclet doclet = new ConfluenceDoclet();
-
             DocletOptions options = new DocletOptions(root.options());
+            System.out.println("Options:\n" + options.toString());
+
             doclet.init(options);
 
-            System.out.println(options.toString());
             String outDir = options.getOutputDir();
-            System.out.println("Out dir " + outDir);
 
             Configuration templateConfig = doclet.createTemplateConfiguration();
 
+            System.out.println("Creating directories for packages...");
             doclet.createPackageDirectories(root.specifiedPackages(), outDir);
+
+            System.out.println("\nGenerating doc for packages...");
             doclet.generatePackagePages(root.specifiedPackages(), templateConfig, outDir);
-            //doclet.generateClassPages(root.classes(), templateConfig);
+
+            System.out.println("\nGenerating doc for classes, interfaces, exceptions...");
+            for (PackageDoc p : root.specifiedPackages()) {
+                String dir = outDir + "/" + p.name();
+                doclet.generateClassPages(p.allClasses(), templateConfig, dir);
+                doclet.generateClassPages(p.interfaces(), templateConfig, dir);
+                doclet.generateClassPages(p.exceptions(), templateConfig, dir);
+            }
 
             return true;
         } catch (Exception e) {
@@ -78,7 +87,6 @@ public class ConfluenceDoclet extends Standard {
         useConsoleOut = "".equals(options.getOutputDir());
         if (useConsoleOut) {
             consoleWriter = new OutputStreamWriter(System.out);
-
         }
     }
 
@@ -114,53 +122,40 @@ public class ConfluenceDoclet extends Standard {
         return LanguageVersion.JAVA_1_5;
     }
 
-    private void generateClassPages(ClassDoc[] classes, Configuration templateConfig) {
+    private void generateClassPages(ClassDoc[] classes, Configuration templateConfig, String outDir)
+            throws IOException {
         if (classes != null && classes.length > 0) {
             for (ClassDoc c : classes) {
-                if (!c.name().equals("AppTest")) { //TODO just for testing
-                    generateClassPage(c, templateConfig);
-                }
+                String outFileName = c.name() + ".wiki";
+                System.out.println(outDir + "/" + outFileName);
+                generateClassPage(c, templateConfig, createOutputWriter(outDir, outFileName));
             }
         }
     }
 
-    private void generateClassPage(ClassDoc theClass, Configuration templateConfig) {
+    private void generateClassPage(ClassDoc theClass, Configuration templateConfig, Writer writer) {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("class", new ClassAdapter(theClass));
 
-        //generatePage(templateConfig, input, "class-page.ftl");
-    }
-
-    private String generateMethodsSummary(MethodDoc[] methods) {
-        StringBuilder summary = new StringBuilder();
-        if (methods != null && methods.length > 0) {
-            for (MethodDoc m : methods) {
-                summary.append(generateMethodSummary(m));
-
-            }
-        }
-        return summary.toString();
-    }
-
-    private String generateMethodSummary(MethodDoc method) {
-        final String TEMPLATE = "<tr><td>%s</td><td>%s</td></ltr>";
-        return String.format(TEMPLATE, method.returnType().typeName(), method.name());
+        generatePage(templateConfig, input, "class-page.ftl", writer);
     }
 
     private void generatePackagePages(PackageDoc[] packages, Configuration templateConfig, String outDir)
             throws IOException {
         if (packages != null && packages.length > 0) {
             for (PackageDoc p : packages) {
-                generatePackagePage(p, templateConfig, createOutputWriter(outDir, p.name() + ".wiki"));
+                String outFileName = p.name() + ".wiki";
+                System.out.println(outDir + "/" + outFileName);
+                generatePackagePage(p, templateConfig, createOutputWriter(outDir, outFileName));
             }
         }
     }
 
     private File createDirectory(String parentDir, String name) {
+        System.out.println("Creating " + parentDir + "/" + name + " ...");
         if (!isConsoleOut()) {
             File dir = new File(parentDir + "/" + name);
             //TODO process creation error, boolean return value
-            System.out.println("Creating dir " + parentDir + "/" + name);
             dir.mkdir();
             return dir;
         } else {
@@ -187,22 +182,6 @@ public class ConfluenceDoclet extends Standard {
     }
 
     private void generatePackagePage(PackageDoc p, Configuration templateConfig, Writer writer) {
-        /*Configuration cfg = new Configuration(new Version("2.3.23"));
-        cfg.setClassForTemplateLoading(this.getClass(), "/wiki-templates/");
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setLocale(Locale.US);
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);*/
-
-        //input.put("title", "Vogella example");
-
-        /*input.put("exampleObject", new ValueExampleObject("Java object", "me"));
-
-        List<ValueExampleObject> systems = new ArrayList<ValueExampleObject>();
-        systems.add(new ValueExampleObject("Android", "Google"));
-        systems.add(new ValueExampleObject("iOS States", "Apple"));
-        systems.add(new ValueExampleObject("Ubuntu", "Canonical"));
-        systems.add(new ValueExampleObject("Windows7", "Microsoft"));
-        input.put("systems", systems);*/
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("package", new PackageAdapter(p));
 
