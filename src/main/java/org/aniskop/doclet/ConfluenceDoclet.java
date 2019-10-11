@@ -1,6 +1,7 @@
 package org.aniskop.doclet;
 
 import com.sun.javadoc.*;
+import com.sun.tools.doclets.standard.Standard;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
@@ -40,9 +41,12 @@ mvn package && javadoc -sourcepath ./src/test/java -doclet org.aniskop.doclet.Co
 /**
  * Hello world!
  */
-public class ConfluenceDoclet {
+// Extend Standard doclet class to make sure its command line arguments
+// are available to the doclet.
+public class ConfluenceDoclet extends Standard {
 
     private static Writer consoleWriter;
+    private boolean useConsoleOut = true;
 
     public static boolean start(RootDoc root) {
         try {
@@ -50,13 +54,17 @@ public class ConfluenceDoclet {
             ConfluenceDoclet doclet = new ConfluenceDoclet();
 
             DocletOptions options = new DocletOptions(root.options());
+            doclet.init(options);
+
             System.out.println(options.toString());
+            String outDir = options.getOutputDir();
+            System.out.println("Out dir " + outDir);
 
             Configuration templateConfig = doclet.createTemplateConfiguration();
 
-            doclet.generatePackagePages(root.specifiedPackages(), templateConfig, options.getOutputDir());
-            doclet.createPackageDirectories(root.specifiedPackages(), options.getOutputDir());
-            doclet.generateClassPages(root.classes(), templateConfig);
+            doclet.createPackageDirectories(root.specifiedPackages(), outDir);
+            doclet.generatePackagePages(root.specifiedPackages(), templateConfig, outDir);
+            //doclet.generateClassPages(root.classes(), templateConfig);
 
             return true;
         } catch (Exception e) {
@@ -66,11 +74,20 @@ public class ConfluenceDoclet {
         }
     }
 
+    private void init(DocletOptions options) {
+        useConsoleOut = "".equals(options.getOutputDir());
+        if (useConsoleOut) {
+            consoleWriter = new OutputStreamWriter(System.out);
+
+        }
+    }
+
+    private boolean isConsoleOut() {
+        return useConsoleOut;
+    }
+
     private Writer createOutputWriter(String outDir, String name) throws IOException {
-        if ("".equals(outDir)) {
-            if (consoleWriter == null) {
-                consoleWriter = new OutputStreamWriter(System.out);
-            }
+        if (isConsoleOut()) {
             return consoleWriter;
         } else {
             return new FileWriter(outDir + "/" + name);
@@ -107,13 +124,6 @@ public class ConfluenceDoclet {
         }
     }
 
-    //TODO delete, probably useless
-    private void savePage(String content) {
-        if (content != null && content.length() > 0) {
-            System.out.println(content);
-        }
-    }
-
     private void generateClassPage(ClassDoc theClass, Configuration templateConfig) {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("class", new ClassAdapter(theClass));
@@ -147,9 +157,10 @@ public class ConfluenceDoclet {
     }
 
     private File createDirectory(String parentDir, String name) {
-        if (!"".equals(parentDir)) {
-            File dir = new File(parentDir);
+        if (!isConsoleOut()) {
+            File dir = new File(parentDir + "/" + name);
             //TODO process creation error, boolean return value
+            System.out.println("Creating dir " + parentDir + "/" + name);
             dir.mkdir();
             return dir;
         } else {
