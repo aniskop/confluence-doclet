@@ -51,29 +51,42 @@ public class ConfluenceDoclet extends Standard {
     public static boolean start(RootDoc root) {
         try {
             System.out.println("=== Confluence doclet ===");
+
             ConfluenceDoclet doclet = new ConfluenceDoclet();
+
             DocletOptions options = new DocletOptions(root.options());
             System.out.println("Options:\n" + options.toString());
 
             doclet.init(options);
 
             String outDir = options.getOutputDir();
+            if (!"".equals(outDir)) {
+                File d = new File(outDir);
+                if (d.exists()) {
+                    if (!d.canWrite()) {
+                        System.out.println("Access denied: cannot write to " + outDir);
+                        System.exit(1);
+                    }
+                } else {
+                    System.out.print("Directory " + outDir + " does not exist. Creating... ");
+                    if (!d.getParentFile().canWrite()) {
+                        System.out.println("Access denied: cannot create directory in " + outDir);
+                        System.exit(1);
+                    }
+                    if (d.mkdir()) {
+                        System.out.println("OK.");
+                    } else {
+                        System.out.println("Failed.");
+                        System.exit(1);
+                    }
+                }
+            }
 
             Configuration templateConfig = doclet.createTemplateConfiguration();
 
-            System.out.println("Creating directories for packages...");
             doclet.createPackageDirectories(root.specifiedPackages(), outDir);
-
-            System.out.println("\nGenerating doc for packages...");
             doclet.generatePackagePages(root.specifiedPackages(), templateConfig, outDir);
-
-            System.out.println("\nGenerating doc for classes, interfaces, exceptions...");
-            for (PackageDoc p : root.specifiedPackages()) {
-                String dir = outDir + "/" + p.name();
-                doclet.generateClassPages(p.allClasses(), templateConfig, dir);
-                doclet.generateClassPages(p.interfaces(), templateConfig, dir);
-                doclet.generateClassPages(p.exceptions(), templateConfig, dir);
-            }
+            doclet.generatePackageMemberPages(root.specifiedPackages(), templateConfig, outDir);
 
             return true;
         } catch (Exception e) {
@@ -142,6 +155,8 @@ public class ConfluenceDoclet extends Standard {
 
     private void generatePackagePages(PackageDoc[] packages, Configuration templateConfig, String outDir)
             throws IOException {
+        System.out.println("\nGenerating doc for packages...");
+
         if (packages != null && packages.length > 0) {
             for (PackageDoc p : packages) {
                 String outFileName = p.name() + ".wiki";
@@ -151,16 +166,14 @@ public class ConfluenceDoclet extends Standard {
         }
     }
 
-    private File createDirectory(String parentDir, String name) {
-        System.out.println("Creating " + parentDir + "/" + name + " ...");
+    private void createDirectory(String parentDir, String name) {
+        System.out.print("Creating " + parentDir + "/" + name + " ... ");
+
         if (!isConsoleOut()) {
             File dir = new File(parentDir + "/" + name);
             //TODO process creation error, boolean return value
             dir.mkdir();
-            return dir;
-        } else {
-            //TODO throw exception??
-            return null;
+            System.out.println("OK.");
         }
     }
 
@@ -188,10 +201,24 @@ public class ConfluenceDoclet extends Standard {
         generatePage(templateConfig, input, "package.ftl", writer);
     }
 
-    private void createPackageDirectories(PackageDoc[] packages, String parentDir) {
+    private void createPackageDirectories(PackageDoc[] packages, String outDir) {
+        System.out.println("Creating directories for packages...");
+
         for (PackageDoc p : packages) {
-            createDirectory(parentDir, p.name());
+            createDirectory(outDir, p.name());
         }
     }
 
+    private void generatePackageMemberPages(PackageDoc[] packages, Configuration templateConfig, String outDir)
+            throws IOException {
+        System.out.println("\nGenerating doc for classes, interfaces, exceptions...");
+
+        for (PackageDoc p : packages) {
+            String dir = outDir + "/" + p.name();
+            generateClassPages(p.allClasses(), templateConfig, dir);
+            generateClassPages(p.interfaces(), templateConfig, dir);
+            generateClassPages(p.exceptions(), templateConfig, dir);
+        }
+
+    }
 }
