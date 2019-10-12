@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 /*
 cd ~/development/confluence-doclet
-javadoc -sourcepath ./src/main/java -doclet ConfluenceDoclet -docletpath
+javadoc -sourcepath ./src/main/java -doclet org.aniskop.doclet.ConfluenceDoclet -docletpath
 ./target/confluence-doclet-1.0-jar-with-dependencies.jar -cp $JAVA_HOME/lib/tools.jar  org.aniskop.doclet
 */
 /* QUICK COMPILE AND TEST
