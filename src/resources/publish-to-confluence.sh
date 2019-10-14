@@ -15,18 +15,27 @@ function extract_page_id() {
     echo ""
 }
 
+function read_file_as_json_value() {
+    contents=""
+    buffer=""
+    while IFS= read -r line; do
+        buffer="$line\\n"
+        buffer=$(echo "$buffer" | sed "s/\"/\\\"/g")
+        contents="$contents$buffer"
+    done < "$1"
+    echo $contents
+}
+
 function publish_page() {
     page_title=$1
-    page_contents=$2
+    page_contents="$2"
     parent_id=$3
-    payload_template=$(echo "{\"type\":\"page\",\"title\": \"$page_title\",\"space\":{\"key\":\"$space_key\"},\"ancestors\":[{\"id\":\"$parent_id\"}],\"body\": {\"storage\": {\"value\": \"$page_contents\",\"representation\": \"wiki\"}}")
+    payload_template=$(echo "{\"type\":\"page\",\"title\": \"$page_title\",\"space\":{\"key\":\"$space_key\"},\"ancestors\":[{\"id\":\"$parent_id\"}],\"body\": {\"storage\": {\"value\": \"$page_contents\",\"representation\": \"wiki\"}}}")
+    http_response=$(curl -is -X POST -H "Content-Type: application/json" --basic -u "$basic_auth" -d "$payload_template" "$host_url/rest/api/content")
 
-    #http_response="curl -X POST --basic -u $basic_auth -d \"$payload_template\" $host_url/rest/api/2/content"
-    # below line only for testing
-    http_response=$(curl -is -X GET https://www.google.lt)
     published_http_code=$(extract_http_code "$http_response")
     
-    if [ "$published_http_code" == "201" ]; then
+    if [ "$published_http_code" == "200" ]; then
         published_page_id=$(extract_page_id "$http_response")
     else
         published_page_id=""
@@ -63,9 +72,12 @@ do
     package_name=$(basename $package_page)
     package_name=${package_name%.*}
 
-    publish_page "$package_name" "$(cat $package_page)" "$root_page_id"
+    page_contents=$(read_file_as_json_value "$package_page")
 
-    if [ "$published_http_code" == "201" ]; then
+    publish_page "$package_name" "$page_contents" "$root_page_id"
+    echo "HTTP code=$published_http_code, page id=$published_page_id"
+
+    if [ "$published_http_code" == "200" ]; then
         # Remember package page id because published_page_id is overwritten after every call
         package_page_id=$published_page_id
     
