@@ -11,8 +11,20 @@ function extract_http_code() {
     echo $http_code
 }
 
+function validate_page_id() {
+    if [ "$1" == "" ]; then
+        echo "is empty."
+    elif [ "$1" =~ ^[0-9]+$ ]; then
+        # Everything OK, no error message
+        echo ""
+    else
+        echo "not a number."
+    fi
+}
+
 function extract_page_id() {
-    echo ""
+    page_id=$(echo "$1" | grep -E "\"id\"\:\s*\"[0-9]+\"" | grep -oE "[0-9]+")
+    echo "$page_id"
 }
 
 function read_file_as_json_value() {
@@ -30,8 +42,8 @@ function publish_page() {
     page_title=$1
     page_contents="$2"
     parent_id=$3
-    payload_template=$(echo "{\"type\":\"page\",\"title\": \"$page_title\",\"space\":{\"key\":\"$space_key\"},\"ancestors\":[{\"id\":\"$parent_id\"}],\"body\": {\"storage\": {\"value\": \"$page_contents\",\"representation\": \"wiki\"}}}")
-    http_response=$(curl -is -X POST -H "Content-Type: application/json" --basic -u "$basic_auth" -d "$payload_template" "$host_url/rest/api/content")
+    payload=$(echo "{\"type\":\"page\",\"title\": \"$page_title\",\"space\":{\"key\":\"$space_key\"},\"ancestors\":[{\"id\":\"$parent_id\"}],\"body\": {\"storage\": {\"value\": \"$page_contents\",\"representation\": \"wiki\"}}}")
+    http_response=$(curl -is -X POST -H "Content-Type: application/json" --basic -u "$basic_auth" -d "$payload" "$host_url/rest/api/content")
 
     published_http_code=$(extract_http_code "$http_response")
     
@@ -80,13 +92,31 @@ do
     if [ "$published_http_code" == "200" ]; then
         # Remember package page id because published_page_id is overwritten after every call
         package_page_id=$published_page_id
+        validation_error=$(validate_page_id "$package_page_id")
+
+        if [ "$validation_error" != "" ]; then
+            echo "Failed extracting published page id: $validation_error."
+            echo "Stopping execution."
+            exit;
+        fi
     
         for class_page in $source_dir/$package_name/*.wiki
         do
             echo "  Publishing class page $class_page ..."
             class_name=$(basename $class_page)
             class_name=${class_name%.*}
+            
             publish_page "$class_name" "$(cat $class_page)" "$package_page_id"
+            echo "HTTP code=$published_http_code, page id=$published_page_id"
+
+            if [ "$published_http_code" == "200" ]; then
+                validation_error=$(validate_page_id "$published_page_id")
+                if [ "$validation_error" != "" ]; then
+                    echo "Failed extracting published page id: $validation_error."
+                    echo "Stopping execution."
+                    exit;
+                fi
+            fi
         done
     fi
 done
