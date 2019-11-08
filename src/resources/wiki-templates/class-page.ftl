@@ -1,3 +1,4 @@
+<#include "formatting-utils.ftl">
 {code:java}
 package ${class.packageName};
 
@@ -11,7 +12,7 @@ extends ${class.superclass}
   </#if>
 </#if>
 {code}
-${class.comment}
+${formatComment(class.comment)}
 
 h1. Methods
 <#include "class-methods-summary.ftl">

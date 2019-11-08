@@ -4,10 +4,12 @@ import com.sun.javadoc.Doc;
 import com.sun.javadoc.Tag;
 
 //TODO implement support of generic classes and their params in the output
+
 /**
  * Base class for all Javadoc adapters, containing common API.
  * All specific API is implemented in child classes.
- * @param <T>   Original Javadoc object.
+ *
+ * @param <T> Original Javadoc object.
  */
 public class BaseDocAdapter<T extends Doc> {
     /**
@@ -17,7 +19,8 @@ public class BaseDocAdapter<T extends Doc> {
 
     /**
      * Must be called by all child classes for proper general initiation.
-     * @param doc   Javadoc structure like ClassDoc, PackageDoc etc.
+     *
+     * @param doc Javadoc structure like ClassDoc, PackageDoc etc.
      */
     protected BaseDocAdapter(T doc) {
         this.doc = doc;

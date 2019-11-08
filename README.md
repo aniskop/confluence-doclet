@@ -1,4 +1,3 @@
-# confluence-doclet
 Javadoc doclet to transform javadoc comments into Atlassian Confluence pages. The output is in wiki markup syntax.
 
 # Building
@@ -11,5 +10,6 @@ javadoc -sourcepath ./src/test/java -doclet org.aniskop.doclet.ConfluenceDoclet 
 ```
 
 # Supported Javadoc syntax elements
-* First sentence as a method summary
-* `@param`, `@return`
+* First sentence as a method summary.
+* `@param`, `@return`.
+* `<code>`.
