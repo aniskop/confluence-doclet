@@ -1,4 +1,8 @@
 || Return type || Method || Summary ||
 <#list class.methods as method>
-| ${method.returnTypeName} | ${method.name} | ${method.summary} |
+| ${method.returnType.name}<#if method.returnType.isGeneric()><#t>
+                                 <<#list method.returnType.typeParams as t><#t>
+                                     ${t.name}<#if t?has_next>, </#if><#t>
+                                 </#list>><#t>
+                             </#if><#lt>${method.returnType.dimension} | ${method.name} | ${method.summary} |
 </#list>

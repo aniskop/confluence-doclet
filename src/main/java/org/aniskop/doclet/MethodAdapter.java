@@ -8,19 +8,15 @@ import com.sun.javadoc.Tag;
  */
 public class MethodAdapter extends BaseDocAdapter<MethodDoc> {
 
+    private TypeAdapter returnType;
+
     public MethodAdapter(MethodDoc m) {
         super(m);
+        returnType = new TypeAdapter(doc.returnType());
     }
 
-    /**
-     * @return Non-qualified type name. Includes <code>[]</code> for arrays.
-     */
-    public String getReturnTypeName() {
-        return doc.returnType().typeName();
-    }
-
-    public String getReturnTypeDimension() {
-        return doc.returnType().dimension();
+    public TypeAdapter getReturnType() {
+        return returnType;
     }
 
     public static MethodAdapter[] toArray(MethodDoc[] methods) {

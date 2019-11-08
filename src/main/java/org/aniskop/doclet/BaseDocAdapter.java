@@ -15,6 +15,10 @@ public class BaseDocAdapter<T extends Doc> {
      */
     protected T doc;
 
+    /**
+     * Must be called by all child classes for proper general initiation.
+     * @param doc   Javadoc structure like ClassDoc, PackageDoc etc.
+     */
     protected BaseDocAdapter(T doc) {
         this.doc = doc;
     }

@@ -10,7 +10,7 @@ ${method.comment}
     </#list>
 </#if>
 
-<#if method.returnTypeName != "void" && method.returnComment != "">
+<#if method.returnType.name != "void" && method.returnComment != "">
 *Returns*
 ${method.returnComment}
 </#if>

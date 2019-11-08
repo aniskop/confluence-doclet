@@ -15,8 +15,8 @@ ${class.comment}
 
 h1. Methods
 <#include "class-methods-summary.ftl">
-<#list class.methods as method>
 
+<#list class.methods as method>
 h2. ${method.name}
 <#include "method.ftl">
 </#list>

@@ -5,7 +5,7 @@ import com.sun.javadoc.ParameterizedType;
 import com.sun.javadoc.TypeVariable;
 
 /**
- * Represents a class. Used by templating engine.
+ * Represents a Java class.
  */
 public class ClassAdapter extends BaseDocAdapter<ClassDoc> {
 

@@ -1,5 +1,8 @@
 package org.aniskop.doclet.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple generic class to test support of generics.
  *
@@ -26,5 +29,22 @@ public class GenericClass<T> {
      */
     public void setMember(T newValue) {
         member = newValue;
+    }
+
+    /**
+     * Gets list of type T.
+     * <p>Used to test generic method.</p>
+     */
+    public List<T> getList() {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Sets list of type T.
+     * <p>Used to test generic arguments.</p>
+     * @param list
+     */
+    public void setList(List<T> list) {
+
     }
 }
