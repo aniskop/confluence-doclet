@@ -1,6 +1,8 @@
 package org.aniskop.doclet;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ParameterizedType;
+import com.sun.javadoc.TypeVariable;
 
 /**
  * Represents a class. Used by templating engine.
@@ -37,5 +39,23 @@ public class ClassAdapter extends BaseDocAdapter<ClassDoc> {
 
     public String getQualifiedSuperclass() {
         return doc.superclass().qualifiedName();
+    }
+
+    public boolean isGeneric() {
+        TypeVariable[] vars = doc.typeParameters();
+        return (vars == null && vars.length > 0) ? false : true;
+    }
+
+    /**
+     * Gets type variables (or type parameters) of a generic class.
+     * @return  Empty array for non-generic classes.
+     */
+    public TypeVariableAdapter[] getTypeParams() {
+        TypeVariable[] vars = doc.typeParameters();
+        if (vars != null) {
+            return TypeVariableAdapter.toArray(vars);
+        } else {
+            return new TypeVariableAdapter[0];
+        }
     }
 }
